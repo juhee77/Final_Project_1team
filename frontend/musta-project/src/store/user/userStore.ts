@@ -46,6 +46,9 @@ export default class userStore {
   userAddress = { zipcode: '', city: '', street: '' };
 
   userRepository = userRepository;
+  getUserInfo = async () => {
+    this.userInfo;
+  };
 
   login = async (data: FormData) => {
     const username: string | undefined = data.get('id')?.toString();
@@ -59,6 +62,20 @@ export default class userStore {
     };
 
     return await userRepository.login(loginform);
+    // .then((res: any) => {
+    //   if (200 <= res.status && res.status < 400) {
+    //     console.log(res.data.accessToken);
+    //     localStorage.setItem('accessToken', res.data.accessToken);
+    //     this.userInfo = {
+    //       ...this.userInfo,
+    //       username: res.data.username,
+    //       accessToken: res.data.accessToken,
+    //     };
+    //   }
+    // })
+    // .catch((err: any) => {
+    //   Promise.reject(err);
+    // });
   };
 
   handleSignup = async (data: FormData) => {
@@ -85,6 +102,7 @@ export default class userStore {
     return await userRepository.signup(signupform);
   };
 
+
   handleOAuthSignUp = async (data: FormData) => {
     const authSignupform: authSignupform = {
       phoneNumber: data.get('phoneNumber') as string,
@@ -98,9 +116,10 @@ export default class userStore {
         city: this.userAddress.city,
         zipcode: this.userAddress.zipcode,
         street: this.userAddress.street,
+
       };
     }
-    console.log(data);
+        console.log(data)
     return await userRepository.oauthSignup(authSignupform);
   };
 
@@ -111,19 +130,16 @@ export default class userStore {
       newPasswordCheck: data.get('newPasswordCheck') as string,
     };
 
-    return await userRepository.changePassword(passwordForm);
+    return await userRepository
+      .changePassword(passwordForm)
+      .then((res: AxiosResponse) => {
+        return res;
+      })
+      .catch((res: AxiosResponse) => {
+        return Promise.reject(res);
+      });
   };
 
-  changeImage = async (data: any) => {
-    return await userRepository.changeImage(data);
-  };
-
-  changeEmail = async (data: any) => {
-    return await userRepository.changeEmail(data);
-  };
-  chnageAddress = async () => {
-    return await userRepository.changeAddress(this.userAddress);
-  };
   setAddress = ({ zipcode, city }: { zipcode: string; city: string }) => {
     this.userAddress = {
       ...this.userAddress,

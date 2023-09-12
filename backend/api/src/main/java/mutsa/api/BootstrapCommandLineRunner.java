@@ -18,6 +18,7 @@ public class BootstrapCommandLineRunner implements CommandLineRunner {
     @Value("${dataloader}")
     private String dataloader;
 
+
     @Override
     public void run(String... args) throws Exception {
         if (dataloader.equals("1")) {

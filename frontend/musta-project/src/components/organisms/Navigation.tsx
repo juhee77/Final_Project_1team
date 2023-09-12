@@ -23,8 +23,10 @@ const pages = [
   ['게시글', '/article'],
 ];
 
-const settings = [
-  ['Profile', '/user/profile'],
+const baseSettings = [
+  ['Profile', '/profile'],
+  ['Account', '/account'],
+  ['Dashboard', '/dashboard'],
   ['내가 주문한 목록', '/my/order/consume'],
   ['내가 판매한 목록', '/my/order/sell'],
   ['나의 채팅방', '/chatrooms'],
@@ -66,26 +68,29 @@ const Navigation = () => {
 
   const handleLogout = () => {
     authStore.logout();
-    navigate('/');
+    navigate("/");
   };
 
   useEffect(() => {
     if (localStorage.getItem('accessToken') == null) {
       return;
     }
-    if (!authStore.userInfo) {
+    if (authStore.userInfo == undefined) {
       try {
         authStore
           .findUserInfo()
-          .then((res: any) => {
+          .then((res:any) => {
             authStore.userInfo = res.data;
             navigate('/');
           })
+          .catch((res) =>
+            openAlert({ state: 'error', message: res.data.message })
+          );
       } catch (error) {
         localStorage.remove('accessToken');
       }
     }
-    return () => {};
+    return () => { };
   }, []);
 
   return (
@@ -144,50 +149,50 @@ const Navigation = () => {
               </Link>
             </Box>
           )) || (
-            <Box>
-              <Tooltip title="">
-                <IconButton
-                  onClick={handleOpenUserMenu}
-                  disableRipple
-                  sx={{ borderRadius: '5px', outline: 0 }}>
-                  <Avatar
-                    alt="Remy Sharp"
-                    src={authStore.userInfo?.image_url}
-                    sx={{ marginX: '10px' }}
+              <Box>
+                <Tooltip title="">
+                  <IconButton
+                    onClick={handleOpenUserMenu}
+                    disableRipple
+                    sx={{ borderRadius: '5px', outline: 0 }}>
+                    <Avatar
+                      alt="Remy Sharp"
+                      src={authStore.userInfo?.image_url}
+                      sx={{ marginX: '10px' }}
+                    />
+                    <Typography>
+                      {/*// TODO 임시로 넣은 코드*/}
+                      {/*{authStore.userInfo?.username}*/}
+                      {!authStore.userInfo?.username
+                        ? 'User123'
+                        : authStore.userInfo?.username}
+                    </Typography>
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  sx={{ mt: '45px' }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  autoFocus={false}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}>
+                  <NavMenu
+                    pages={settings}
+                    handleCloseNavMenu={handleCloseUserMenu}
                   />
-                  <Typography>
-                    {/*// TODO 임시로 넣은 코드*/}
-                    {/*{authStore.userInfo?.username}*/}
-                    {!authStore.userInfo?.username
-                      ? 'User123'
-                      : authStore.userInfo?.username}
-                  </Typography>
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                autoFocus={false}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}>
-                <NavMenu
-                  pages={settings}
-                  handleCloseNavMenu={handleCloseUserMenu}
-                />
-              </Menu>
-              <button onClick={handleLogout}>로그아웃</button>
-            </Box>
-          )}
+                </Menu>
+                <button onClick={handleLogout}>로그아웃</button>
+              </Box>
+            )}
         </Toolbar>
       </Container>
     </AppBar>

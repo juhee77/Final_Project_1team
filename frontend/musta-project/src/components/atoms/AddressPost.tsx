@@ -22,7 +22,7 @@ const AddressPost = () => {
     open({ onComplete: handleComplete });
   };
   return (
-    <Button type="button" onClick={handleClick} fullWidth color="inherit">
+    <Button type="button" onClick={handleClick}>
       주소찾기
     </Button>
   );
